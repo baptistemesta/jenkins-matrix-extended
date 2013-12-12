@@ -3,6 +3,6 @@
     <f:textbox default="" />
   </f:entry>
   <f:entry title="${%variableLabel}" field="valueString">
-      <f:textbox value="${it.varName}" />
+    <f:expandableTextbox />
   </f:entry>
 </j:jelly>
