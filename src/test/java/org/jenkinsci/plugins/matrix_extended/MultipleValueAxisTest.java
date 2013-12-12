@@ -25,4 +25,19 @@ public class MultipleValueAxisTest {
 
     }
 
+    @Test
+    public void check_add_build_variable_add_correct_values_with_spaces() throws Exception {
+        axis = new MultipleValueAxis("axeName",
+                "axeValue1[firstkey=firstvalue@@@secondkey=secondvalue]\naxeValue2[firstkey=first value2@@@secondkey=secondvalue2]");
+
+        HashMap<String, String> map = new HashMap<String, String>();
+        axis.addBuildVariable("axeValue2", map);
+        System.out.println(map);
+        assertEquals(3, map.size());
+        assertEquals("axeValue2", map.get("axeName"));
+        assertEquals("first value2", map.get("firstkey"));
+        assertEquals("secondvalue2", map.get("secondkey"));
+
+    }
+
 }

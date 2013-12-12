@@ -1,11 +1,13 @@
 package org.jenkinsci.plugins.matrix_extended;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.matrix.Axis;
 import hudson.matrix.AxisDescriptor;
 import hudson.matrix.TextAxis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +29,7 @@ public class MultipleValueAxis extends TextAxis {
 
     @DataBoundConstructor
     public MultipleValueAxis(final String name, final String valueString) {
-        super(name, valueString);
+        super(name, new ArrayList<String>(Arrays.asList(Util.tokenize(valueString, "\n\r\f"))));
     }
 
     @Override
