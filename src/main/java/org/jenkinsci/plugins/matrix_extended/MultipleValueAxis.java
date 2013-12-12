@@ -5,6 +5,7 @@ import hudson.Util;
 import hudson.matrix.Axis;
 import hudson.matrix.AxisDescriptor;
 import hudson.matrix.TextAxis;
+import hudson.util.FormValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import java.util.Map.Entry;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 public class MultipleValueAxis extends TextAxis {
@@ -89,38 +91,27 @@ public class MultipleValueAxis extends TextAxis {
             return "Multiple value axis";
         }
 
-        // /**
-        // * Ensures the value is a valid environment variable. Since some
-        // * variables are not available until build time a warning is generated
-        // * if the name is valid but cannot be found in the current environment.
-        // * @param value
-        // * @return
-        // */
-        // public FormValidation doCheckValueString( @QueryParameter
-        // String value )
-        // {
-        // // must have a value
-        // if( value == null || value.length() == 0 )
-        // {
-        // return FormValidation.error( Messages.configNameRequired() );
-        // }
-        //
-        // // check for non-portable characters
-        // Pattern pattern = Pattern.compile( "[^\\p{Alnum}_]+" );
-        // if( pattern.matcher( value ).find() )
-        // {
-        // return FormValidation.warning( Messages.configPortableName() );
-        // }
-        //
-        // // see if it exists in the system; if not we cannot tell if it is valid or not
-        // String content = System.getenv( value );
-        // if( content == null )
-        // {
-        // return FormValidation.warning( Messages.configBuildVariable() );
-        // }
-        //
-        // // should be ok - display current value so user can verify contents are okay to use as axis values
-        // return FormValidation.ok( Messages.configCurrentValue( content ) );
-        // }
+        /**
+         * Ensures the value is a valid environment variable. Since some
+         * variables are not available until build time a warning is generated
+         * if the name is valid but cannot be found in the current environment.
+         * 
+         * @param value
+         * @return
+         */
+        public FormValidation doCheckValueString(@QueryParameter final String value)
+        {
+            String[] tokenize = Util.tokenize(value, "\n\r\f");
+            for (String multiValue : tokenize) {
+                try {
+                    String parseName = ValuesParser.parseName(multiValue);
+                    Map<String, String> parseValues = ValuesParser.parseValues(multiValue);
+                } catch (Exception e) {
+                    return FormValidation.error(e, "Wrong value for the axis value <" + multiValue + ">, see exceptions");
+                }
+            }
+            System.out.println("check " + value);
+            return FormValidation.ok();
+        }
     }
 }
