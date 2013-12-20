@@ -36,6 +36,12 @@ public class MultipleValueAxis extends TextAxis {
 
     @Override
     public void addBuildVariable(final String value, final Map<String, String> map) {
+        // is called 2 times by the matrix build:
+        // 1. with map containing full env
+        // 2. with map containing only job parameters
+
+        // maybe we should not add build variables the second time?
+
         // value is the multi valuated value name
         map.put(name, value);
 
