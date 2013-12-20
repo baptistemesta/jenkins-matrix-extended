@@ -44,12 +44,25 @@ public class MultipleValueAxis extends TextAxis {
             if (ValuesParser.parseName(completeValue).equals(value)) {
                 Map<String, String> parseValues = ValuesParser.parseValues(completeValue);
                 for (Entry<String, String> entry : parseValues.entrySet()) {
-                    map.put(entry.getKey(), entry.getValue());
+                    String replacedValue = replaceEnvVars(entry.getValue(), map);
+                    map.put(entry.getKey(), replacedValue);
                 }
                 return;
             }
         }
         throw new IllegalStateException("entry not found for <" + value + "> in values <" + values + ">");
+    }
+
+    private String replaceEnvVars(final String value, final Map<String, String> map) {
+        String replacedValue = value;
+        while (replacedValue.indexOf("${") >= 0) {
+            int start = replacedValue.indexOf("${");
+            int end = replacedValue.indexOf("}", start);
+            String envVar = replacedValue.substring(start + 2, end);
+            String replacement = map.get(envVar) == null ? envVar : map.get(envVar);
+            replacedValue = new StringBuilder(replacedValue).replace(start, end + 1, replacement).toString();
+        }
+        return replacedValue;
     }
 
     @Override
